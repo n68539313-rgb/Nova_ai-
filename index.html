@@ -1,0 +1,129 @@
+const connaissances = [
+["bonjour","Bonjour ! Comment puis-je t'aider ?"],
+["qui es tu","Je suis NOVA AI, un assistant intelligent créé par Nolhan."],
+["qui t'a créé","J'ai été créé par Nolhan RAKOTOARIMANANA."],
+["madagascar","Madagascar est une grande île de l'océan Indien. Sa capitale est Antananarivo."],
+["capitale de la france","La capitale de la France est Paris."],
+["capitale du bresil","La capitale du Brésil est Brasília."],
+["capitale du japon","La capitale du Japon est Tokyo."],
+["capitales","Une capitale est la ville où se trouvent généralement les principales institutions d'un pays."],
+["continents","Il existe sept continents : Afrique, Asie, Europe, Amérique du Nord, Amérique du Sud, Océanie et Antarctique."],
+["oceans","Les cinq océans sont Pacifique, Atlantique, Indien, Arctique et Austral."],
+["equateur","L'équateur est une ligne imaginaire qui sépare la Terre en deux hémisphères."],
+["sahara","Le Sahara est le plus grand désert chaud du monde."],
+["nature","La nature comprend les animaux, les plantes, les océans, les forêts et les écosystèmes."],
+["amazonie","L'Amazonie est une immense région de forêt tropicale située en Amérique du Sud."],
+["guepard","Le guépard est l'animal terrestre le plus rapide."],
+["baleine bleue","La baleine bleue est le plus grand animal connu."],
+["volcan","Un volcan est une ouverture de la Terre par laquelle peuvent sortir du magma, des gaz et des cendres."],
+["climat","Le climat décrit les conditions météorologiques habituelles d'une région sur une longue période."],
+["football","Le football est un sport collectif opposant deux équipes de onze joueurs."],
+["mbappe","Kylian Mbappé est un footballeur français qui joue au poste d'attaquant."],
+["messi","Lionel Messi est un footballeur argentin, champion du monde en 2022."],
+["cristiano ronaldo","Cristiano Ronaldo est un footballeur portugais célèbre pour ses nombreux records."],
+["lamine yamal","Lamine Yamal est un jeune footballeur espagnol du FC Barcelone."],
+["gavi","Gavi est un milieu de terrain espagnol du FC Barcelone."],
+["bellingham","Jude Bellingham est un milieu de terrain anglais du Real Madrid."],
+["hors jeu","Un joueur est en position de hors-jeu s'il est plus proche du but adverse que le ballon et l'avant-dernier adversaire au moment où un coéquipier lui joue le ballon, sous réserve des règles applicables."],
+["ballon d'or","Le Ballon d'Or est une récompense individuelle prestigieuse du football."],
+["intelligence artificielle","L'intelligence artificielle est une technologie qui permet aux machines d'effectuer certaines tâches associées à l'intelligence humaine."],
+["internet","Internet est un réseau mondial qui relie des millions d'appareils."],
+["systeme solaire","Le système solaire comprend le Soleil et les objets qui tournent autour de lui."],
+["soleil","Le Soleil est une étoile située au centre du système solaire."],
+["html","HTML est un langage utilisé pour structurer les pages web."],
+["youtube","YouTube est une plateforme de partage de vidéos."]
+];
+
+function calculer(texte) {
+  let expression = texte.toLowerCase()
+    .replace(/,/g, ".")
+    .replace(/×/g, "*")
+    .replace(/÷/g, "/")
+    .replace(/x/g, "*")
+    .replace(/π/g, "Math.PI")
+    .replace(/\bpi\b/g, "Math.PI")
+    .replace(/\bsqrt\b/g, "Math.sqrt")
+    .replace(/racine de/g, "Math.sqrt")
+    .replace(/\bpuissance\b/g, "**")
+    .replace(/\bfois\b/g, "*")
+    .replace(/\bplus\b/g, "+")
+    .replace(/\bmoins\b/g, "-");
+
+  expression = expression.replace(/[^0-9+\-*/().% MathPIqrt]/g, "");
+
+  if (!expression.trim()) return null;
+
+  try {
+    if (!/^[0-9+\-*/().% MathPIqrt]+$/.test(expression)) return null;
+
+    const resultat = Function(
+      '"use strict"; return (' + expression + ')'
+    )();
+
+    if (typeof resultat !== "number" || !Number.isFinite(resultat)) {
+      return null;
+    }
+
+    return resultat;
+  } catch {
+    return null;
+  }
+}
+
+function repondre(question) {
+  const q = question.toLowerCase().trim();
+
+  const calcul = calculer(q);
+
+  if (calcul !== null && /[0-9]/.test(q)) {
+    return "🧮 Le résultat est : " + calcul;
+  }
+
+  for (const [mot, reponse] of connaissances) {
+    if (q.includes(mot)) {
+      return reponse;
+    }
+  }
+
+  return "Je ne connais pas encore suffisamment la réponse à cette question. Ma base de connaissances doit être améliorée pour pouvoir te répondre.";
+}
+
+function ajouterMessage(texte, type) {
+  const chat = document.getElementById("chat");
+  const message = document.createElement("div");
+
+  message.className = "message " + type;
+  message.textContent = texte;
+
+  chat.appendChild(message);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function envoyer() {
+  const input = document.getElementById("question");
+  const question = input.value.trim();
+
+  if (!question) return;
+
+  ajouterMessage(question, "user");
+  input.value = "";
+
+  const reponse = repondre(question);
+
+  setTimeout(() => {
+    ajouterMessage(reponse, "bot");
+  }, 300);
+}
+
+function effacer() {
+  document.getElementById("chat").innerHTML =
+    '<div class="message bot">Conversation effacée. Je suis prêt !</div>';
+}
+
+document.getElementById("question").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") envoyer();
+});
+</script>
+
+</body>
+</html>
